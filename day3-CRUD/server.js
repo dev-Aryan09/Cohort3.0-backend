@@ -45,6 +45,23 @@ app.delete("/delete/:id", (req, res) => {
   });
 });
 
+// put -> Update
+app.put("/update/:id", (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  // static update
+  //   const updatedUser = users.map((val) => {
+  //     return val.id === id ? { id, name: "Shery", age: 8 } : val;
+  //   });
+
+  const updatedUser = users.map((val) => {
+    return val.id === id ? { ...val, name } : val;
+  });
+
+  res.send(updatedUser);
+});
+
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
 });
