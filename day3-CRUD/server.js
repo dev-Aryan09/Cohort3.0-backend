@@ -28,6 +28,23 @@ app.get("/", (req, res) => {
   });
 });
 
+// delete -> Delete
+app.delete("/delete/:id", (req, res) => {
+  const { id } = req.params;
+
+  const usersData = users.filter((val) => {
+    return val.id !== id;
+  });
+
+  // updating users data so that it won't show deleted user
+  users = usersData;
+
+  res.send({
+    message: "User deleted successfully!",
+    users: users,
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
 });
