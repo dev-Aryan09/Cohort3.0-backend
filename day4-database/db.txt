@@ -1,0 +1,7 @@
+Learned about database.
+Why our data is wiping out, and need of database
+Types of database -> Relational and Non-Relational
+MongoDB -> installation and set-up (on web)
+MongoDB Compass -> installation and set-up
+How to connect MongoDB Atlas and MongoDB Compass
+Brief intro to Mongoose
