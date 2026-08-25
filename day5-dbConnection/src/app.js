@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/db");
+const NotesModel = require("./models/note.model");
 
 connectDB();
 
@@ -12,15 +13,18 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/create", (req, res) => {
+app.post("/create", async (req, res) => {
   const { title, description } = req.body;
 
+  const newNote = await NotesModel.create({
+    title,
+    description,
+  });
+
   return res.send({
+    success: true,
     message: "note created successfully!",
-    note: {
-      title,
-      description,
-    },
+    note: newNote,
   });
 });
 
