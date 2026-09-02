@@ -6,6 +6,7 @@ import { MyContext } from "../context/MyContext";
 const Notes = () => {
   const { allNotes } = useContext(MyContext);
 
+ 
   return (
     <section className="border-t border-black">
       {/* Section heading */}
@@ -28,7 +29,11 @@ const Notes = () => {
       {/* Notes */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-12 py-8 sm:grid-cols-2 xl:grid-cols-3">
         {allNotes.map((note, index) => (
-          <NoteCard key={note._id} note={note} index={index} />
+          <NoteCard
+            key={note._id}
+            note={note}
+            index={index}
+          />
         ))}
       </div>
     </section>

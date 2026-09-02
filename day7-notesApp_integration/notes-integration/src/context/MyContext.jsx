@@ -16,10 +16,22 @@ export const MyContextProvider = ({ children }) => {
       console.log("Error in fetching all notes", error);
     }
   };
+
+  const handleDeleteNote = async (id) => {
+    try {
+      const res = await axios.delete(`http://localhost:3000/notes/${id}`);
+      getAllNotes();
+    } catch (error) {
+      console.log("Error in deleting note", error);
+    }
+  };
+
   useEffect(() => {
     getAllNotes();
   }, []);
   return (
-    <MyContext.Provider value={{ allNotes }}>{children}</MyContext.Provider>
+    <MyContext.Provider value={{ allNotes, handleDeleteNote }}>
+      {children}
+    </MyContext.Provider>
   );
 };

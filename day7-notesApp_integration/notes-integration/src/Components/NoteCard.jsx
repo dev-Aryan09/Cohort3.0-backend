@@ -1,6 +1,9 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { useContext } from "react";
+import { MyContext } from "../context/MyContext";
 
 const NoteCard = ({ note, index }) => {
+  const { handleDeleteNote } = useContext(MyContext);
   return (
     <article className="group flex min-h-70 flex-col border-t-4 border-black">
       {/* Meta */}
@@ -36,6 +39,7 @@ const NoteCard = ({ note, index }) => {
         </button>
 
         <button
+          onClick={() => handleDeleteNote(note._id)}
           type="button"
           className="flex flex-1 items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-[0.15em] transition-colors hover:bg-red-600 hover:text-white"
         >
