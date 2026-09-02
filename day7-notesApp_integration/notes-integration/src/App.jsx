@@ -1,6 +1,38 @@
+import React, { useState } from "react";
+import axios from "axios";
 import { Plus } from "lucide-react";
+import Notes from "./Components/Notes";
 
 const App = () => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+
+    if (formData.title === "" || formData.description === "") {
+      alert("missing either title or description");
+      return;
+    }
+
+    const createNote = await axios.post(
+      "http://localhost:3000/notes/create",
+      formData,
+    );
+    console.log(createNote);
+
+    setFormData({
+      title: "",
+      description: "",
+    });
+  };
   return (
     <main className="min-h-screen bg-[#f2f1ed] text-black">
       <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 border-x border-black md:grid-cols-12">
@@ -41,7 +73,7 @@ const App = () => {
 
           {/* Form */}
           <div className="p-6 md:p-10">
-            <form className="max-w-3xl">
+            <form onSubmit={handleSubmit} className="max-w-3xl">
               <div className="border-t-4 border-black">
                 <div className="grid border-b border-black md:grid-cols-[140px_1fr]">
                   <label className="border-b border-black p-4 text-xs font-bold uppercase tracking-[0.18em] md:border-r md:border-b-0">
@@ -49,8 +81,10 @@ const App = () => {
                   </label>
 
                   <input
+                    onChange={handleChange}
                     type="text"
                     name="title"
+                    value={formData.title}
                     placeholder="Untitled note"
                     className="bg-transparent p-4 text-2xl font-bold outline-none placeholder:text-neutral-400 md:text-3xl"
                   />
@@ -62,8 +96,11 @@ const App = () => {
                   </label>
 
                   <textarea
-                    rows="8"
+                    onChange={handleChange}
+                    rows="6"
                     name="description"
+                    value={formData.description}
+                    minLength={20}
                     placeholder="Write something worth remembering..."
                     className="resize-none bg-transparent p-4 text-base leading-7 outline-none placeholder:text-neutral-400"
                   />
@@ -81,6 +118,8 @@ const App = () => {
               </div>
             </form>
           </div>
+
+          <Notes />
         </section>
       </div>
     </main>

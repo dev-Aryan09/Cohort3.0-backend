@@ -1,27 +1,11 @@
-import NoteCard from "./components/NoteCard";
-
-const notes = [
-  {
-    id: 1,
-    title: "Learn MongoDB",
-    description:
-      "Understand models, schemas, database connections and how Mongoose works with Express.",
-  },
-  {
-    id: 2,
-    title: "Project Ideas",
-    description:
-      "Build a minimal notes application with authentication and a clean Swiss-inspired interface.",
-  },
-  {
-    id: 3,
-    title: "Things to Remember",
-    description:
-      "Focus on consistency, responsive layouts and keeping components reusable.",
-  },
-];
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import NoteCard from "./NoteCard";
+import { MyContext } from "../context/MyContext";
 
 const Notes = () => {
+  const { allNotes } = useContext(MyContext);
+
   return (
     <section className="border-t border-black">
       {/* Section heading */}
@@ -37,14 +21,14 @@ const Notes = () => {
         </div>
 
         <span className="text-xs font-bold">
-          {String(notes.length).padStart(2, "0")} ITEMS
+          {String(allNotes.length).padStart(2, "0")} ITEMS
         </span>
       </div>
 
       {/* Notes */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-12 py-8 sm:grid-cols-2 xl:grid-cols-3">
-        {notes.map((note, index) => (
-          <NoteCard key={note.id} note={note} index={index} />
+        {allNotes.map((note, index) => (
+          <NoteCard key={note._id} note={note} index={index} />
         ))}
       </div>
     </section>
