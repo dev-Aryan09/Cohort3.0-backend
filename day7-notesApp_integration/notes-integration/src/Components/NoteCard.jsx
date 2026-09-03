@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { MyContext } from "../context/MyContext";
 
 const NoteCard = ({ note, index }) => {
-  const { handleDeleteNote } = useContext(MyContext);
+  const { handleDeleteNote, noteForUpdate } = useContext(MyContext);
   return (
     <article className="group flex min-h-70 flex-col border-t-4 border-black">
       {/* Meta */}
@@ -31,11 +31,12 @@ const NoteCard = ({ note, index }) => {
       {/* Actions */}
       <div className="flex border-t border-black">
         <button
+          onClick={() => noteForUpdate(note)}
           type="button"
           className="flex flex-1 items-center justify-center gap-2 border-r border-black py-3 text-xs font-bold uppercase tracking-[0.15em] transition-colors hover:bg-black hover:text-white"
         >
-          <Pencil size={14} />
-          Edit
+          <Pencil size={14} className="text-green-500" />
+          Update
         </button>
 
         <button
@@ -43,7 +44,7 @@ const NoteCard = ({ note, index }) => {
           type="button"
           className="flex flex-1 items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-[0.15em] transition-colors hover:bg-red-600 hover:text-white"
         >
-          <Trash2 size={14} />
+          <Trash2 size={14} className="text-red-500" />
           Delete
         </button>
       </div>

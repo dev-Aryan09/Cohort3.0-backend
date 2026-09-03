@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Plus } from "lucide-react";
 import Notes from "./Components/Notes";
+import { MyContext } from "./context/MyContext";
 
 const App = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-  });
+  const {
+    formData,
+    setFormData,
+    handleCreateNote,
+    updateNoteId,
+    handleNoteUpdate,
+  } = useContext(MyContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  console.log(formData);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
 
@@ -22,11 +27,11 @@ const App = () => {
       return;
     }
 
-    const createNote = await axios.post(
-      "http://localhost:3000/notes/create",
-      formData,
-    );
-    console.log(createNote);
+    if (updateNoteId) {
+      handleNoteUpdate(updateNoteId);
+    } else {
+      handleCreateNote();
+    }
 
     setFormData({
       title: "",
@@ -113,7 +118,7 @@ const App = () => {
                   className="flex items-center gap-3 bg-black px-6 py-4 text-sm font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-red-600"
                 >
                   <Plus size={18} />
-                  Add Note
+                  {updateNoteId ? "Update Note" : "Add Note"}
                 </button>
               </div>
             </form>
