@@ -23,9 +23,9 @@ const userSchema = new mongoose.Schema({
   refreshToken: {
     type: String,
   },
-  accessToken: {
-    type: String,
-  },
+  // accessToken: {  // do NOT store in DB
+  //   type: String,  // store in memory (context/redux)
+  // },
 });
 
 const userModel = mongoose.model("users", userSchema);
