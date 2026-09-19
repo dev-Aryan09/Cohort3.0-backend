@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/user.model.js";
+import { generateTokens, verifyAccessToken } from "../utils/auth.js";
 
 export const registerController = async (req, res) => {
   try {
@@ -34,10 +35,11 @@ export const registerController = async (req, res) => {
       password: passwordHash,
     });
 
-    const { accessToken, refreshToken } = generateTokens({ userdId: user._id });
+    const { accessToken, refreshToken } = generateTokens({ userId: user._id });
 
     // updating existing document in DB using save()
-    ((user.refreshToken = refreshToken), await user.save());
+    user.refreshToken = refreshToken;
+    await user.save();
 
     // storing in cookies
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
@@ -56,9 +58,40 @@ export const registerController = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: {
-        message: "Internal Server Error",
+        message: "Internal Server Error during register",
         error,
       },
+    });
+  }
+};
+
+export const getMeController = async (req, res) => {
+  const accessToken = req.headers.authorization;
+  // checking token
+  if (!accessToken) {
+    return res.status(401).json({
+      message: "Unauthorized, token not found",
+      rejectedToekn: accessToken,
+    });
+  }
+  try {
+    // reading token
+    const decoded = verifyAccessToken(accessToken);
+
+    const user = await userModel.findById(decoded.id);
+
+    return res.status(200).json({
+      message: "User fetched successfully",
+      data: {
+        user: {
+          name: user.name,
+          email: user.email,
+        },
+      },
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Unauthorized, invalid or expired  token",
     });
   }
 };
