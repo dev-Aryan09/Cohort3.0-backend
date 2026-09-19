@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/user.model.js";
-import { generateTokens, verifyAccessToken } from "../utils/auth.js";
+import {
+  generateTokens,
+  verifyAccessToken,
+  verifyRefreshToken,
+} from "../utils/auth.js";
 
 export const registerController = async (req, res) => {
   try {
@@ -41,7 +45,7 @@ export const registerController = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    // storing in cookies
+    // setting in cookies
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
 
     return res.status(201).json({
@@ -66,11 +70,11 @@ export const registerController = async (req, res) => {
 };
 
 export const getMeController = async (req, res) => {
-  const accessToken = req.headers.authorization;
+  const accessToken = req.headers.authorization.split(" ")[1];
   // checking token
   if (!accessToken) {
     return res.status(401).json({
-      message: "Unauthorized, token not found",
+      message: "Unauthorized, access token not found",
       rejectedToekn: accessToken,
     });
   }
@@ -91,7 +95,55 @@ export const getMeController = async (req, res) => {
     });
   } catch (error) {
     return res.status(401).json({
-      message: "Unauthorized, invalid or expired  token",
+      message: "Unauthorized, invalid or expired access token",
+    });
+  }
+};
+
+export const refreshTokensController = async (req, res) => {
+  const { refreshToken } = req.cookies;
+  console.log("RF", refreshToken);
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Unauthorized, missing refresh token",
+    });
+  }
+
+  try {
+    console.log("inside try");
+    const decoded = verifyRefreshToken(refreshToken);
+
+    const user = await userModel.findById(decoded.id);
+
+    if (refreshToken !== user.refreshToken) {
+      // In case, someone trying to get in with tempered token
+      user.refreshToken = null;
+      await user.save();
+
+      return res.status(401).json({
+        message: "Unauthorized, refresh token mismatch",
+      });
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens({
+      userId: user._id,
+    });
+
+    // updating refresh token in DB
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    res.cookie("refreshToken", newRefreshToken, { httpOnly: true });
+
+    return res.status(201).json({
+      message: "Tokens refreshed successfully",
+      accessToken: accessToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Unauthorized, invalid or expired token",
+      error: error,
     });
   }
 };
