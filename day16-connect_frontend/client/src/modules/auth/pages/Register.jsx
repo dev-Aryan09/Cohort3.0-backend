@@ -19,11 +19,14 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(formData);
+      /**
+       * "http://localhost:3000/api/auth/register"
+       */
       const response = await api.post("/auth/register", formData);
-      console.log(response);
+      console.log(response.data);
 
-      // setAccessToken(response.accessToken);
+      setUser(response.data.data.user);
+      setAccessToken(response.data.accessToken);
     } catch (err) {
       console.log(
         "Error in registration,",
