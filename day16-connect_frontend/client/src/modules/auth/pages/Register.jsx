@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import useApi from "../shared/api";
 import { useAuthContext } from "../context/AuthContext";
 
 const Register = () => {
   const api = useApi();
+  const navigate = useNavigate();
   const { setUser, setAccessToken } = useAuthContext();
 
   const [formData, setFormData] = useState({
@@ -32,6 +34,13 @@ const Register = () => {
         "Error in registration,",
         err?.message || "Registration Failed",
       );
+    } finally {
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
+      navigate("/profile");
     }
   };
 
