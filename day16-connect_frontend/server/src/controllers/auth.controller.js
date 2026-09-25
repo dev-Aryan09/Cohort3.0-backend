@@ -102,7 +102,6 @@ export const getMeController = async (req, res) => {
 
 export const refreshTokensController = async (req, res) => {
   const { refreshToken } = req.cookies;
-  console.log("RF", refreshToken);
 
   if (!refreshToken) {
     return res.status(401).json({
@@ -111,7 +110,6 @@ export const refreshTokensController = async (req, res) => {
   }
 
   try {
-    console.log("inside try");
     const decoded = verifyRefreshToken(refreshToken);
 
     const user = await userModel.findById(decoded.id);

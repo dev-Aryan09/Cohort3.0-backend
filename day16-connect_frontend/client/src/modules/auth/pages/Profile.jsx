@@ -1,4 +1,4 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import useApi from "../shared/api";
 
@@ -9,8 +9,6 @@ const Profile = () => {
   const fetchUserDetails = async () => {
     try {
       const response = await api.get("/auth/me");
-      console.log("profile response", response);
-
       setUser(response.data.data.user);
     } catch (error) {
       console.log(
@@ -25,8 +23,9 @@ const Profile = () => {
   }, []);
   return (
     <div>
-      <h1>Name: {user.name}</h1>
-      <h1>Email: {user.email}</h1>
+      Profile
+      <h1>Name: {user?.name}</h1>
+      <h1>Email: {user?.email}</h1>
     </div>
   );
 };

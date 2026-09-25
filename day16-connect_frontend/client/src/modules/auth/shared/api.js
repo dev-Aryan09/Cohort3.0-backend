@@ -21,5 +21,26 @@ export default function useApi() {
     },
   );
 
+  api.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    // execute for 401 unauthorized
+    async (error) => {
+      if (error?.response && error.response.status === 401) {
+        const res = await axios.post("http://localhost:5173/api/auth/refresh");
+        console.log(res);
+
+        context.setAccessToken(res.data.accessToken);
+
+        error.config.headers.Authorization = `Bearer ${res.data.accessToken}`;
+
+        // retries the original failed request with the updated headers
+        return axios(error.config);
+      }
+      return Promise.reject(error);
+    },
+  );
+
   return api;
 }
