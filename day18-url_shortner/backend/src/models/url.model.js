@@ -11,17 +11,19 @@ const urlSchema = new mongoose.Schema(
     },
     //The 6-character code in the short link
     shortCode: {
-      type: {
-        type: String,
-        required: true,
-        unique: [true, "Short code must be unique"],
-      },
+      type: String,
+      required: true,
+      unique: [true, "Short code must be unique"],
     },
     //How many times the link was opened
     clicks: {
-      type: true,
+      type: Number,
       default: 0,
     },
   },
   { timestamps: true },
 );
+
+const urlModel = mongoose.model("urls", urlSchema);
+
+export default urlModel;
