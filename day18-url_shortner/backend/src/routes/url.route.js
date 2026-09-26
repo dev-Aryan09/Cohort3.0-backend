@@ -62,4 +62,29 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @GET /api/urls/
+ * fetch all the URLS from Database
+ */
+router.get("/", async (req, res) => {
+  try {
+    const allUrls = await urlModel.find();
+
+    return res.status(200).json({
+      success: true,
+      message: "All URLs Fetched Successfully",
+      data: {
+        allUrls,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: {
+        message: "Internal Server Error",
+        error: error,
+      },
+    });
+  }
+});
 export default router;
