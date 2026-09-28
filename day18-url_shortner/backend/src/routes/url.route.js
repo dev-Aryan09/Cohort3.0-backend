@@ -87,4 +87,38 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
+/**
+ * @DELETE /api/urls/:id
+ * delete an URL based on unique id
+ */
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedUrl = await urlModel.findByIdAndDelete(id);
+
+    if (!deletedUrl) {
+      return res.status(404).json({
+        message: "URL Not Found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "URL Deleted Successfully",
+      deletedUrl,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        message: "Unable to delete url",
+        error,
+      },
+    });
+  }
+});
+
 export default router;
