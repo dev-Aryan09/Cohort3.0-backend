@@ -1,20 +1,29 @@
 import { Link2, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { createUrl } from "../api/urls";
+import useUrlContext from "../context/UrlContext";
 
 const ShortenForm = () => {
+  const context = useUrlContext();
   const [inputUrl, setInputUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   // create URL
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     try {
       setLoading(true);
       e.preventDefault();
 
       if (!inputUrl.trim()) return;
 
-      const response = createUrl({ url: inputUrl });
+      const response = await createUrl({ url: inputUrl });
+      console.log("Response", response);
+
+      if (!response.data.shortCode) {
+        return alert("Short code missing or Something went wrong");
+      }
+
+      context.setCurrentUrl(`http://localhost:3000/${response.data.shortCode}`);
     } catch (error) {
       console.log("Error in submitting form,", error?.message);
     } finally {
@@ -94,9 +103,13 @@ const ShortenForm = () => {
         </button>
       </div>
 
-      <p className="mt-2 text-xs text-gray-500">
-        Enter a valid URL starting with http:// or https://
-      </p>
+      {inputUrl !== "" && (
+        <p
+          className={`mt-1 text-xs ${inputUrl.startsWith("http://") || inputUrl.startsWith("https://") ? "text-green-600" : "text-red-600"}`}
+        >
+          Enter a valid URL starting with http:// or https://
+        </p>
+      )}
     </form>
   );
 };
