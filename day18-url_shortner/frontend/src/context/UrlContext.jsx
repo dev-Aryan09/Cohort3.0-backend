@@ -5,8 +5,9 @@ const UrlContext = createContext();
 
 export const UrlContextProvider = ({ children }) => {
   const [currentUrl, setCurrentUrl] = useState(null);
+  const [urls, setAllUrls] = useState([]);
   return (
-    <UrlContext.Provider value={{ currentUrl, setCurrentUrl }}>
+    <UrlContext.Provider value={{ currentUrl, setCurrentUrl, urls, setAllUrls }}>
       {children}
     </UrlContext.Provider>
   );
@@ -19,6 +20,6 @@ export default function useUrlContext() {
     throw new Error("useUrlContext must be use within UrlContextProvider");
   }
 
-  // currentUrl, setCurrentUrl
+  // currentUrl, setCurrentUrl, urls, allUrls
   return context;
 }

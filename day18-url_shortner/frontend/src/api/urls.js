@@ -21,3 +21,16 @@ export async function createUrl({ url }) {
     );
   }
 }
+
+export async function fetchAllUrls() {
+  try {
+    const response = await axios.get("http://localhost:5173/api/urls/");
+    return response.data;
+  } catch (error) {
+    console.log(
+      "Something went wrong,",
+      error?.message || "Error in shortening the URL",
+      error,
+    );
+  }
+}

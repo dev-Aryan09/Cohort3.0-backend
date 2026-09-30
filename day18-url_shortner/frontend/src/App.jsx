@@ -1,6 +1,7 @@
 import React from "react";
 import ShortenForm from "./components/ShortenForm";
 import ResultCard from "./components/ResultCard";
+import UrlList from "./components/UrlList";
 
 const App = () => {
   return (
@@ -29,11 +30,16 @@ const App = () => {
       </div>
 
       {/* URL Form */}
-      <div className="mx-auto w-full max-w-3xl">
+      <main className="mx-auto w-full max-w-4xl">
+        {/* Create Short URL */}
         <ShortenForm />
 
+        {/* Newly Created URL */}
         <ResultCard />
-      </div>
+
+        {/* All URLs */}
+        <UrlList />
+      </main>
     </div>
   );
 };
