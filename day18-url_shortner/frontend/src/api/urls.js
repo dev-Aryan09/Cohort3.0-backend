@@ -11,7 +11,7 @@ export async function createUrl({ url }) {
         },
       },
     );
-    console.log("res", response);
+    // console.log("res", response);
     return response.data;
   } catch (error) {
     console.log(

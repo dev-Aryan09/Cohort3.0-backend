@@ -19,6 +19,10 @@ const ShortenForm = () => {
       const response = await createUrl({ url: inputUrl });
       console.log("Response", response);
 
+      if (response) {
+        context.setAllUrls((prev) => [...prev, response.data]);
+      }
+
       if (!response.data.shortCode) {
         return alert("Short code missing or Something went wrong");
       }
