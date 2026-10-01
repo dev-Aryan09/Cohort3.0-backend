@@ -32,7 +32,7 @@ const ResultCard = () => {
         shadow-sm
       "
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Short URL */}
         <div className="min-w-0 flex-1">
           <p className="mb-1 text-xs font-medium text-stone-400">
@@ -70,6 +70,7 @@ const ResultCard = () => {
             hover:bg-stone-100
             active:scale-95
             cursor-pointer
+            sm:px-3
           "
         >
           {copied ? (

@@ -37,21 +37,22 @@ const ShortenForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-4xl p-4">
+    <form onSubmit={handleSubmit} className="w-full max-w-4xl px-3 p-4 sm:px-4">
       <div
         className="
-          flex w-full items-center gap-2
-          rounded-xl border border-gray-300
-          bg-white p-1.5
-          shadow-sm
-          transition-all duration-200
-          focus-within:border-gray-500
-          focus-within:ring-2
-          focus-within:ring-gray-200
-        "
+       flex w-full items-center gap-1.5
+       rounded-xl border border-gray-300
+       bg-white p-1.5
+       shadow-sm
+       transition-all duration-200
+       focus-within:border-gray-500
+       focus-within:ring-2
+       focus-within:ring-gray-200
+       sm:gap-2
+      "
       >
         {/* URL Icon */}
-        <div className="hidden pl-3 text-gray-400 sm:block">
+        <div className="pl-3 text-gray-400 sm:block">
           <Link2 size={19} strokeWidth={1.8} />
         </div>
 
@@ -66,13 +67,14 @@ const ShortenForm = () => {
           className="
             min-w-0 flex-1
             bg-transparent
-            px-2 py-2
+            px-2 py-2.5
             font-mono text-sm
             text-gray-900
             outline-none
             placeholder:text-gray-400
             disabled:cursor-not-allowed
             disabled:opacity-60
+            sm:py-3
           "
         />
 
@@ -81,17 +83,18 @@ const ShortenForm = () => {
           type="submit"
           disabled={loading || !inputUrl.trim()}
           className="
-            flex shrink-0 items-center justify-center gap-2
-            rounded-lg
-            bg-gray-950
-            px-5 py-2
-            text-sm font-semibold text-white
-            transition-all duration-200
-            hover:bg-gray-800
-            active:scale-[0.98]
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-          "
+           flex shrink-0 items-center justify-center gap-2
+           rounded-lg
+           bg-gray-950
+           px-3 py-2.5
+           text-sm font-semibold text-white
+           transition-all duration-200
+           hover:bg-gray-800
+           active:scale-[0.98]
+           disabled:cursor-not-allowed
+           disabled:opacity-50
+           sm:px-5 sm:py-3
+        "
         >
           {loading ? (
             <>
@@ -101,7 +104,7 @@ const ShortenForm = () => {
           ) : (
             <>
               <span title="paste a valid url">Shorten</span>
-              <ArrowRight size={17} />
+              <ArrowRight size={17} className="hidden sm:block" />
             </>
           )}
         </button>

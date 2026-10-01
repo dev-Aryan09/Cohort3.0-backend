@@ -82,12 +82,14 @@ const UrlList = () => {
             <div
               key={item._id || item.shortCode}
               className={`
-                flex items-center gap-4
-                px-3 py-3
-                transition-colors
-                hover:bg-stone-50
-                ${index !== urls.length - 1 ? "border-b border-stone-200" : ""}
-              `}
+              grid grid-cols-[auto_1fr_auto]
+              gap-x-3 gap-y-2
+              px-3 py-3
+              transition-colors
+             hover:bg-stone-50
+              sm:flex sm:items-center sm:gap-3
+             ${index !== urls.length - 1 ? "border-b border-stone-200" : ""}
+             `}
             >
               {/* Short Code */}
               <a
@@ -98,6 +100,8 @@ const UrlList = () => {
                   w-24 shrink-0
                   truncate
                   font-mono text-sm
+                  sm:w-24
+                  sm:shrink-0
                   text-orange-600
                   hover:underline
                 "
@@ -106,28 +110,35 @@ const UrlList = () => {
               </a>
 
               {/* Original URL */}
-              <div className="min-w-0 flex-1">
+              <div className="col-span-1 min-w-0 sm:flex-1">
                 <p
                   title={item.originalUrl}
-                  className="
-                    truncate
-                    text-sm
-                    text-stone-500
-                  "
+                  className={`
+  truncate text-sm
+  transition-all
+  text-stone-500
+`}
                 >
                   {item.originalUrl}
                 </p>
               </div>
 
               {/* Clicks */}
-              <div className="hidden shrink-0 sm:block">
+              <div className="col-start-2 row-start-3 sm:col-auto sm:row-auto">
                 <span className="font-mono text-sm text-stone-800">
                   {item.clicks || 0} clicks
                 </span>
               </div>
 
               {/* Actions */}
-              <div className="flex shrink-0 items-center gap-1">
+              <div
+                className="
+  col-start-2 row-start-3
+  flex items-center gap-1
+  justify-self-end
+  sm:col-auto sm:row-auto sm:ml-auto
+"
+              >
                 <button
                   type="button"
                   onClick={() => handleCopy(shortUrl, item._id)}
@@ -136,12 +147,13 @@ const UrlList = () => {
                     rounded-md
                     border border-stone-300
                     px-2.5 py-1.5
-                    text-xs
+                    text-[11px]
                     text-stone-600
                     transition
                     hover:bg-stone-100
                     active:scale-95
                     cursor-pointer
+                     sm:px-2.5 sm:text-xs
                   "
                 >
                   {copiedId === item._id ? (
