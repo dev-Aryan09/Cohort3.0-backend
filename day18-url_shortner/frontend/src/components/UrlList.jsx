@@ -1,9 +1,9 @@
 import { Copy, Trash2, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import useUrlContext from "../context/UrlContext";
-import { fetchAllUrls } from "../api/urls";
+import { deleteUrl, fetchAllUrls } from "../api/urls";
 
-const UrlList = ({ onDelete }) => {
+const UrlList = () => {
   const { urls, setAllUrls } = useUrlContext();
   const [copiedId, setCopiedId] = useState(null);
 
@@ -18,6 +18,22 @@ const UrlList = ({ onDelete }) => {
       }, 2000);
     } catch (error) {
       console.error("Failed to copy URL:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteUrl(id); // performs an API call
+      /**
+      // Option 1: Refetch everything
+      const updatedUrls = await fetchAllUrls();
+      setAllUrls(updatedUrls);
+       */
+
+      // Option 2 (better): Update state locally without refetch
+      setAllUrls((prev) => prev.filter((url) => url._id !== id));
+    } catch (error) {
+      console.error("Failed to delete:", error);
     }
   };
 
@@ -143,7 +159,7 @@ const UrlList = ({ onDelete }) => {
 
                 <button
                   type="button"
-                  onClick={() => onDelete?.(item._id)}
+                  onClick={() => handleDelete(item._id)}
                   className="
                     rounded-md
                     border border-stone-300

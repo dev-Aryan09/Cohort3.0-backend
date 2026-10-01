@@ -34,3 +34,15 @@ export async function fetchAllUrls() {
     );
   }
 }
+
+export async function deleteUrl(id) {
+  try {
+    await axios.delete(`http://localhost:5173/api/urls/${id}`);
+  } catch (error) {
+    console.log(
+      "Error in deleting URL:",
+      error?.message || "Failed to delete URL",
+    );
+    throw error; // propagate error so caller can handle it
+  }
+}
