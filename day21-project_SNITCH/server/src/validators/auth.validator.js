@@ -47,3 +47,39 @@ export const registerValidator = [
     next();
   },
 ];
+
+/**
+ * @description
+ */
+export const loginValidator = [
+  body("email")
+    .exists()
+    .withMessage("Email is required")
+    .bail()
+    .trim()
+    .isEmail()
+    .withMessage("Enter a valid email address")
+    .normalizeEmail(),
+
+  body("password")
+    .exists()
+    .withMessage("Password is required")
+    .bail()
+    .isString()
+    .withMessage("Password must be string")
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage("Password must contains atleast 6 characters"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Invalid request",
+        errors: errors.array(),
+      });
+    }
+    next();
+  },
+];

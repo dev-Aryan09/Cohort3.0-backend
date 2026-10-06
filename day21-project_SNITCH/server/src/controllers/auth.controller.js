@@ -11,7 +11,6 @@ import { generateAccessToken, generateRefreshToken } from "../utils/auth.js";
  * @param req.body.password String
  */
 export const registerController = async (req, res) => {
-  console.log("01");
   const { email, name, password } = req.body;
 
   const isUserAlreadyExists = await userModel.findOne({ email });
@@ -65,6 +64,66 @@ export const registerController = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Internal Server Error while registering a user",
+      error,
+    });
+  }
+};
+
+/**
+ * @description Login a user and create new set of accessToken and refreshToken
+ * @param req.body Object
+ * @param req.body.email String
+ * @param req.body.password String
+ */
+export const loginController = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json({
+      message: "Invalid email or password",
+    });
+  }
+
+  try {
+    const isValidPassword = bcrypt.compare(password, user.passwordHash);
+
+    if (!isValidPassword) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const accessToken = generateAccessToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    const refreshToken = generateRefreshToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+
+    await userModel.findByIdAndUpdate(user._id, {
+      refreshToken,
+    });
+
+    return res.status(200).json({
+      message: "User loggedIn successfully",
+      data: {
+        user: {
+          email: user.email,
+          name: user.name,
+        },
+        accessToken,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error while login",
       error,
     });
   }

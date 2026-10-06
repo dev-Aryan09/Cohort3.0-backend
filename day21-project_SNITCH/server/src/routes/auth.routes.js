@@ -1,6 +1,9 @@
 import express from "express";
-import { registerController } from "../controllers/auth.controller.js";
-import { registerValidator } from "../validators/auth.validator.js";
+import {
+  loginController,
+  registerController,
+} from "../controllers/auth.controller.js";
+import { loginValidator, registerValidator } from "../validators/auth.validator.js";
 
 const router = express.Router();
 
@@ -11,5 +14,14 @@ const router = express.Router();
  * @response res.status = 201 (if successful)
  */
 router.post("/register", registerValidator, registerController);
+
+/**
+ * @POST /api/auth/register
+ * @param req
+ * @param req
+ * @param req.body = {email,password}
+ * @response res.status = 200
+ */
+router.post("/login",loginValidator ,loginController);
 
 export default router;
