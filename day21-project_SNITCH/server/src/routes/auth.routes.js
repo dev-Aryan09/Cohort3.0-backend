@@ -1,9 +1,13 @@
 import express from "express";
 import {
   loginController,
+  refreshTokensController,
   registerController,
 } from "../controllers/auth.controller.js";
-import { loginValidator, registerValidator } from "../validators/auth.validator.js";
+import {
+  loginValidator,
+  registerValidator,
+} from "../validators/auth.validator.js";
 
 const router = express.Router();
 
@@ -17,11 +21,14 @@ router.post("/register", registerValidator, registerController);
 
 /**
  * @POST /api/auth/register
- * @param req
- * @param req
  * @param req.body = {email,password}
- * @response res.status = 200
+ * @response res.status = 200 (if successful)
  */
-router.post("/login",loginValidator ,loginController);
+router.post("/login", loginValidator, loginController);
+
+/**
+ * @POST /api/auth/refresh
+ */
+router.post("/refresh", refreshTokensController);
 
 export default router;

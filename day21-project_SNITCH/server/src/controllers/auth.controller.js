@@ -1,6 +1,10 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { generateAccessToken, generateRefreshToken } from "../utils/auth.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  readRefreshToken,
+} from "../utils/auth.js";
 
 /**
  * @description Register an user and save the data from req.body
@@ -124,6 +128,67 @@ export const loginController = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Internal Server Error while login",
+      error,
+    });
+  }
+};
+
+/**
+ * @description rotate both the tokens when access token has expired
+ */
+export const refreshTokensController = async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Unauthorized, Missing Refresh Token",
+    });
+  }
+
+  try {
+    const decoded = readRefreshToken(refreshToken);
+    const { userId, role } = decoded;
+
+    const user = await userModel.findById(userId);
+
+    if (refreshToken !== user.refreshToken) {
+      await userModel.findByIdAndUpdate(userId, {
+        refreshToken: null,
+      });
+
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token mismatched",
+      });
+    }
+
+    const accessToken = generateAccessToken({
+      userId,
+      role,
+    });
+
+    const newRefreshToken = generateRefreshToken({
+      userId,
+      role,
+    });
+
+    await userModel.findByIdAndUpdate(userId, {
+      refreshToken: newRefreshToken,
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Tokens rotated successfully",
+      accessToken: accessToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Refresh Token",
       error,
     });
   }
