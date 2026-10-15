@@ -1,0 +1,223 @@
+import userModel from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  readRefreshToken,
+} from "../utils/auth.js";
+
+/**
+ * @description Register an user and save the data from req.body
+ * @param req express.Request
+ * @param req.body Object
+ * @param req.body.email String
+ * @param req.body.name String
+ * @param req.body.password String
+ */
+export const registerController = async (req, res) => {
+  const { email, name, password } = req.body;
+
+  const isUserAlreadyExists = await userModel.findOne({ email });
+
+  if (isUserAlreadyExists) {
+    return res.status(400).json({
+      message: "User with this email address already exists",
+      errors: [
+        {
+          field: "email",
+          message: "User with this email address already exists",
+        },
+      ],
+    });
+  }
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+
+    const user = await userModel.create({
+      email,
+      name,
+      passwordHash: hash,
+    });
+
+    const accessToken = generateAccessToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    const refreshToken = generateRefreshToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+
+    await userModel.findByIdAndUpdate(user._id, { refreshToken });
+
+    return res.status(201).json({
+      message: "User created successfully",
+      data: {
+        user: {
+          email: user.email,
+          name: user.name,
+          id: user._id,
+        },
+        accessToken,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error while registering a user",
+      error,
+    });
+  }
+};
+
+/**
+ * @description Login a user and create new set of accessToken and refreshToken
+ * @param req.body Object
+ * @param req.body.email String
+ * @param req.body.password String
+ */
+export const loginController = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json({
+      message: "Invalid email or password",
+    });
+  }
+
+  try {
+    const isValidPassword = bcrypt.compare(password, user.passwordHash);
+
+    if (!isValidPassword) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const accessToken = generateAccessToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    const refreshToken = generateRefreshToken({
+      userId: user._id,
+      role: user.role,
+    });
+
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+
+    await userModel.findByIdAndUpdate(user._id, {
+      refreshToken,
+    });
+
+    return res.status(200).json({
+      message: "User loggedIn successfully",
+      data: {
+        user: {
+          email: user.email,
+          name: user.name,
+        },
+        accessToken,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error while login",
+      error,
+    });
+  }
+};
+
+/**
+ * @description rotate both the tokens when access token has expired
+ */
+export const refreshTokensController = async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Unauthorized, Missing Refresh Token",
+    });
+  }
+
+  try {
+    const decoded = readRefreshToken(refreshToken);
+    const { userId, role } = decoded;
+
+    const user = await userModel.findById(userId);
+
+    if (refreshToken !== user.refreshToken) {
+      await userModel.findByIdAndUpdate(userId, {
+        refreshToken: null,
+      });
+
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token mismatched",
+      });
+    }
+
+    const accessToken = generateAccessToken({
+      userId,
+      role,
+    });
+
+    const newRefreshToken = generateRefreshToken({
+      userId,
+      role,
+    });
+
+    await userModel.findByIdAndUpdate(userId, {
+      refreshToken: newRefreshToken,
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Tokens rotated successfully",
+      accessToken: accessToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Refresh Token",
+      error,
+    });
+  }
+};
+
+/**
+ * @description returns current loggedIn user
+ */
+export const getMeController = async (req, res) => {
+  try {
+    const { userId, role } = req.user;
+
+    const user = await userModel.findById(userId);
+
+    return res.status(200).json({
+      success: true,
+      messaage: "User details fetched successfully",
+      data: {
+        user: {
+          name: user.name,
+          email: user.email,
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error while getting current loggedIn user",
+    });
+  }
+};
