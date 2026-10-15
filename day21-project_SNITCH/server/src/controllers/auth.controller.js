@@ -193,3 +193,31 @@ export const refreshTokensController = async (req, res) => {
     });
   }
 };
+
+/**
+ * @description returns current loggedIn user
+ */
+export const getMeController = async (req, res) => {
+  try {
+    const { userId, role } = req.user;
+
+    const user = await userModel.findById(userId);
+
+    return res.status(200).json({
+      success: true,
+      messaage: "User details fetched successfully",
+      data: {
+        user: {
+          name: user.name,
+          email: user.email,
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error while getting current loggedIn user",
+    });
+  }
+};

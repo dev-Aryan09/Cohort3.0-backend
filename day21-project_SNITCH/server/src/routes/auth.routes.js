@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getMeController,
   loginController,
   refreshTokensController,
   registerController,
@@ -8,6 +9,7 @@ import {
   loginValidator,
   registerValidator,
 } from "../validators/auth.validator.js";
+import { authenticate } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -30,5 +32,10 @@ router.post("/login", loginValidator, loginController);
  * @POST /api/auth/refresh
  */
 router.post("/refresh", refreshTokensController);
+
+/**
+ * @GET /api/auth/me
+ */
+router.get("/me", authenticate, getMeController);
 
 export default router;
