@@ -27,6 +27,7 @@ const productSchema = new mongoose.Schema({
   price: {
     amount: {
       type: Number,
+      required: true,
     },
     currency: {
       type: String,
@@ -45,6 +46,7 @@ const productSchema = new mongoose.Schema({
           values: ["XS", "S", "M", "L", "XL", "XXL"],
           message: "{value} is not a supported size",
         },
+        required: true,
       },
       stock: {
         type: Number,
