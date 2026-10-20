@@ -20,7 +20,7 @@ export const createProductController = async (req, res) => {
 
   const product = await productModel.create({
     title,
-    description,  
+    description,
     price,
     sizes,
     images: imageUrls,
@@ -32,6 +32,18 @@ export const createProductController = async (req, res) => {
     message: "Product created successfully",
     data: {
       product,
+    },
+  });
+};
+
+export const listAllProducts = async (req, res) => {
+  const products = await productModel.find();
+
+  return res.status(200).json({
+    succes: true,
+    message: "Products fetched successfully",
+    data: {
+      products,
     },
   });
 };

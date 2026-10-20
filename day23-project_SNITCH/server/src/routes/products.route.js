@@ -1,7 +1,10 @@
 import express from "express";
 import multer from "multer";
 import { createProductValidator } from "../validators/product.validator.js";
-import { createProductController } from "../controllers/products.controller.js";
+import {
+  createProductController,
+  listAllProducts,
+} from "../controllers/products.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -56,5 +59,13 @@ router.post(
   // ---------- main business logic ----------
   createProductController,
 );
+
+/**
+ * @method GET
+ * @route /api/products/
+ * @description get all the products from DB
+ * @access user
+ */
+router.get("/", authenticate, listAllProducts);
 
 export default router;
