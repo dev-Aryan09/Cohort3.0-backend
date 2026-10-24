@@ -1,9 +1,15 @@
 import express from "express";
 import multer from "multer";
-import { createProductValidator } from "../validators/product.validator.js";
+import {
+  createProductValidator,
+  listProductValidator,
+  unlistProductValidator,
+} from "../validators/product.validator.js";
 import {
   createProductController,
   listAllProducts,
+  listProductController,
+  unlistProductController,
 } from "../controllers/products.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 
@@ -67,5 +73,53 @@ router.post(
  * @access user
  */
 router.get("/", authenticate, listAllProducts);
+
+/**
+ * @method PATCH
+ * @route /api/products/unlist/:id
+ * @description Unlist a product by its ID, published: false
+ * @access seller
+ */
+router.patch(
+  "/unlist/:id",
+  authenticate,
+  (req, res, next) => {
+    const { role } = req.user;
+
+    if (role !== "seller") {
+      return res.status(403).json({
+        field: "role",
+        message: "User is unauthorized to de this action",
+      });
+    }
+    next();
+  },
+  unlistProductValidator,
+  unlistProductController,
+);
+
+/**
+ * @method PATCH
+ * @route /api/products/list/:id
+ * @description List a product by its ID, published: true
+ * @access seller
+ */
+router.patch(
+  "/list/:id",
+  authenticate,
+  (req, res, next) => {
+    const { role } = req.user;
+
+    if (role !== "seller") {
+      return res.status(403).json({
+        field: "role",
+        message: "User is unauthorized to de this action",
+      });
+    }
+    next();
+  },
+  listProductValidator,
+  listProductController,
+);
 
 export default router;

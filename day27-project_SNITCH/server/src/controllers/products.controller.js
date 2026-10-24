@@ -37,7 +37,9 @@ export const createProductController = async (req, res) => {
 };
 
 export const listAllProducts = async (req, res) => {
-  const products = await productModel.find();
+  const products = await productModel.find({
+    published: true,
+  });
 
   return res.status(200).json({
     succes: true,
@@ -45,5 +47,49 @@ export const listAllProducts = async (req, res) => {
     data: {
       products,
     },
+  });
+};
+
+export const unlistProductController = async (req, res) => {
+  const { id } = req.params;
+
+  const product = await productModel.findById(id);
+
+  if (!product) {
+    return res.status(404).json({
+      message: "Product not found",
+    });
+  }
+
+  // --------------- make product unPublished ---------------
+  await productModel.findByIdAndUpdate(id, {
+    published: false,
+  });
+
+  return res.status(200).json({
+    succes: true,
+    message: "Product unpublished successfully",
+  });
+};
+
+export const listProductController = async (req, res) => {
+  const { id } = req.params;
+
+  const product = await productModel.findById(id);
+
+  if (!product) {
+    return res.status(404).json({
+      message: "Product not found",
+    });
+  }
+
+  // --------------- make product listed ---------------
+  await productModel.findByIdAndUpdate(id, {
+    published: true,
+  });
+
+  return res.status(200).json({
+    succes: true,
+    message: "Product published successfully",
   });
 };
