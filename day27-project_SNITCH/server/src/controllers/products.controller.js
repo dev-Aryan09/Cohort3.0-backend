@@ -36,10 +36,24 @@ export const createProductController = async (req, res) => {
   });
 };
 
-export const listAllProducts = async (req, res) => {
+export const fetchAllProductsUser = async (req, res) => {
+  // fetch ONLY published products
   const products = await productModel.find({
     published: true,
   });
+
+  return res.status(200).json({
+    succes: true,
+    message: "Products fetched successfully",
+    data: {
+      products,
+    },
+  });
+};
+
+export const fetchAllProductsSeller = async (req, res) => {
+  // fetch all products
+  const products = await productModel.find();
 
   return res.status(200).json({
     succes: true,

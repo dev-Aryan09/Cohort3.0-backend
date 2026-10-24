@@ -7,7 +7,8 @@ import {
 } from "../validators/product.validator.js";
 import {
   createProductController,
-  listAllProducts,
+  fetchAllProductsSeller,
+  fetchAllProductsUser,
   listProductController,
   unlistProductController,
 } from "../controllers/products.controller.js";
@@ -69,10 +70,32 @@ router.post(
 /**
  * @method GET
  * @route /api/products/
- * @description get all the products from DB
+ * @description get all published products from DB
  * @access user
  */
-router.get("/", authenticate, listAllProducts);
+router.get("/", authenticate, fetchAllProductsUser);
+
+/**
+ * @method GET
+ * @route /api/products/
+ * @description get all the products from DB
+ * @access seller
+ */
+router.get(
+  "/seller",
+  authenticate,
+  (req, res, next) => {
+    if (req.user.role !== "seller") {
+      return res.status(403).json({
+        field: "role",
+        message: "User is unauthorized to fetch all products",
+      });
+    }
+
+    next();
+  },
+  fetchAllProductsSeller,
+);
 
 /**
  * @method PATCH
